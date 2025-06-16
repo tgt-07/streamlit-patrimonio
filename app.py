@@ -69,22 +69,20 @@ def exibir_grafico(df, filtro):
     plt.box(False)
     st.pyplot(fig)
 
-    # Legenda ordenada do maior para o menor
+    # Legenda responsiva ordenada do maior para o menor
     st.markdown("---")
     legenda = sorted(zip(categorias, valores, cores), key=lambda x: x[1], reverse=True)
 
-    if len(legenda) <= 4:
-        cols = st.columns(len(legenda))
-        for i, (categoria, _, cor) in enumerate(legenda):
+    max_por_linha = 4
+    linhas = [legenda[i:i + max_por_linha] for i in range(0, len(legenda), max_por_linha)]
+
+    for linha in linhas:
+        cols = st.columns(len(linha))
+        for i, (categoria, _, cor) in enumerate(linha):
             with cols[i]:
                 st.markdown(f"<div style='display:flex;align-items:center;margin-bottom:4px;'>"
                             f"<div style='width:14px;height:14px;background:{cor};border-radius:3px;border:1px solid #ccc;margin-right:6px'></div>"
                             f"<span style='font-size:13px;font-family:sans-serif'>{categoria}</span></div>", unsafe_allow_html=True)
-    else:
-        for categoria, _, cor in legenda:
-            st.markdown(f"<div style='display:flex;align-items:center;margin-bottom:4px;'>"
-                        f"<div style='width:14px;height:14px;background:{cor};border-radius:3px;border:1px solid #ccc;margin-right:6px'></div>"
-                        f"<span style='font-size:13px;font-family:sans-serif'>{categoria}</span></div>", unsafe_allow_html=True)
 
 # Lógica de leitura
 if uploaded_file is not None:
