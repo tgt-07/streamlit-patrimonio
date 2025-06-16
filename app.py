@@ -3,15 +3,23 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import io
+import os
 
 st.set_page_config(layout="centered", page_title="Seu Patrimônio")
 
-st.title("Seu patrimônio é:")
+st.markdown("""
+    <div style='text-align: center;'>
+        <h2 style="margin-bottom: 0">Seu patrimônio é:</h2>
+    </div>
+""", unsafe_allow_html=True)
 
 # Upload de Excel
 with st.sidebar:
     uploaded_file = st.file_uploader("📁 Upload Excel", type="xlsx", help="Excel com colunas: Empresa, Tipo de Investimento, Valor")
     filtro = st.selectbox("Visualizar por:", ["Tipo de Investimento", "Empresa"], index=0)
+
+# Nome do arquivo local para persistência
+dados_path = "dados_investimentos.xlsx"
 
 # Função para exibir o gráfico de rosca
 def exibir_grafico(df, filtro):
@@ -76,10 +84,15 @@ if uploaded_file is not None:
         df = pd.read_excel(uploaded_file)
         if all(col in df.columns for col in ['Empresa', 'Tipo de Investimento', 'Valor']):
             df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce').fillna(0)
+            df.to_excel(dados_path, index=False)
             exibir_grafico(df, filtro)
         else:
             st.error("Colunas obrigatórias não encontradas no Excel.")
     except Exception as e:
         st.error(f"Erro ao ler o arquivo: {e}")
+elif os.path.exists(dados_path):
+    df = pd.read_excel(dados_path)
+    df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce').fillna(0)
+    exibir_grafico(df, filtro)
 else:
     st.info("Por favor, envie um arquivo Excel para visualizar o gráfico.")
