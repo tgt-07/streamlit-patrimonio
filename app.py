@@ -15,7 +15,7 @@ st.markdown("""
 
 # Upload de Excel
 with st.sidebar:
-    uploaded_file = st.file_uploader("\ud83d\udcc1 Upload Excel", type="xlsx", help="Excel com colunas: Empresa, Tipo de Investimento, Valor")
+    uploaded_file = st.file_uploader("📁 Upload Excel", type="xlsx", help="Excel com colunas: Empresa, Tipo de Investimento, Valor")
     filtro = st.selectbox("Visualizar por:", ["Tipo de Investimento", "Empresa"], index=0)
 
 # Nome do arquivo local para persistência
@@ -71,12 +71,18 @@ def exibir_grafico(df, filtro):
 
     # Legenda ordenada do maior para o menor
     st.markdown("---")
-    legenda = list(zip(categorias, valores, cores))
-    legenda.sort(key=lambda x: x[1], reverse=True)
-    cols = st.columns(min(4, len(legenda)))
-    for i, (categoria, _, cor) in enumerate(legenda):
-        with cols[i % len(cols)]:
-            st.markdown(f"<div style='display:flex;align-items:center;'>"
+    legenda = sorted(zip(categorias, valores, cores), key=lambda x: x[1], reverse=True)
+
+    if len(legenda) <= 4:
+        cols = st.columns(len(legenda))
+        for i, (categoria, _, cor) in enumerate(legenda):
+            with cols[i]:
+                st.markdown(f"<div style='display:flex;align-items:center;margin-bottom:4px;'>"
+                            f"<div style='width:14px;height:14px;background:{cor};border-radius:3px;border:1px solid #ccc;margin-right:6px'></div>"
+                            f"<span style='font-size:13px;font-family:sans-serif'>{categoria}</span></div>", unsafe_allow_html=True)
+    else:
+        for categoria, _, cor in legenda:
+            st.markdown(f"<div style='display:flex;align-items:center;margin-bottom:4px;'>"
                         f"<div style='width:14px;height:14px;background:{cor};border-radius:3px;border:1px solid #ccc;margin-right:6px'></div>"
                         f"<span style='font-size:13px;font-family:sans-serif'>{categoria}</span></div>", unsafe_allow_html=True)
 
