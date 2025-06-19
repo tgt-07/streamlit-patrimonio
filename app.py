@@ -23,7 +23,7 @@ with st.sidebar:
     with st.expander("☰ Menu", expanded=True):
         uploaded_file = st.file_uploader("📁 Upload Excel", type="xlsx", help="Excel com colunas: Empresa, Tipo de Investimento, Valor")
 
-# Função para exibir o gráfico de rosca
+# Função para exibir o gráfico de rosca e os cartões
 def exibir_grafico(df, filtro):
     grupo = df.groupby(filtro)['Valor'].sum()
     grupo = grupo[grupo > 0].sort_values(ascending=False)
@@ -66,6 +66,7 @@ def exibir_grafico(df, filtro):
     plt.box(False)
     st.pyplot(fig)
 
+    # Legenda
     st.markdown("---")
     categorias = grupo.index.tolist()
     legenda = sorted(zip(categorias, valores, cores), key=lambda x: x[1], reverse=True)
@@ -89,6 +90,32 @@ def exibir_grafico(df, filtro):
             else:
                 with cols[i]:
                     st.markdown("&nbsp;", unsafe_allow_html=True)
+
+    # Cartões verticais abaixo da legenda
+    st.markdown("<br>", unsafe_allow_html=True)
+    for categoria, valor, cor in legenda:
+        percentual = (valor / total) * 100
+        percentual_formatado = f"{percentual:.2f}%"
+        valor_formatado = formatar_reais(valor)
+
+        st.markdown(f"""
+        <div style='border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-bottom: 12px;'>
+            <div style='display: flex; align-items: center;'>
+                <div style='background-color: {cor}; color: white; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 13px; margin-right: 8px;'>
+                    {percentual_formatado}
+                </div>
+                <div style='font-size: 16px; font-weight: 600;'>
+                    {categoria}
+                </div>
+            </div>
+            <div style='margin-top: 12px; font-size: 13px; color: #666;'>
+                Saldo total
+            </div>
+            <div style='font-size: 15px; font-weight: bold; color: #222;'>
+                {valor_formatado}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
 if uploaded_file is not None:
     try:
