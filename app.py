@@ -18,6 +18,22 @@ def formatar_reais_sem_centavos(valor):
 # Nome do arquivo local para persistência
 dados_path = "dados_investimentos.xlsx"
 
+# Botão hamburguer customizado no topo
+with st.container():
+    cols = st.columns([0.1, 0.9])
+    with cols[0]:
+        menu_aberto = st.toggle("☰", label_visibility="collapsed")
+    with cols[1]:
+        st.write("")
+
+# Área do menu se o botão for clicado
+if menu_aberto:
+    st.markdown("---")
+    st.markdown("### Upload de Arquivo")
+    uploaded_file = st.file_uploader("📁 Upload Excel", type="xlsx", help="Excel com colunas: Empresa, Tipo de Investimento, Valor")
+else:
+    uploaded_file = None
+
 # Função para exibir o gráfico de rosca
 def exibir_grafico(df, filtro):
     grupo = df.groupby(filtro)['Valor'].sum()
@@ -85,11 +101,6 @@ def exibir_grafico(df, filtro):
                 with cols[i]:
                     st.markdown("&nbsp;", unsafe_allow_html=True)
 
-# Menu hamburguer para upload
-with st.sidebar:
-    with st.expander("☰ Menu", expanded=True):
-        uploaded_file = st.file_uploader("📁 Upload Excel", type="xlsx", help="Excel com colunas: Empresa, Tipo de Investimento, Valor")
-
 if uploaded_file is not None:
     try:
         df = pd.read_excel(uploaded_file)
@@ -123,6 +134,4 @@ if not df.empty:
     with aba[0]:
         exibir_grafico(df, "Tipo de Investimento")
     with aba[1]:
-        exibir_grafico(df, "Empresa")
-else:
-    st.info("Por favor, envie um arquivo Excel para visualizar o gráfico.")
+        exibir
