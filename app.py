@@ -20,18 +20,10 @@ def exibir_grafico(df, filtro):
         return
 
     valores = grupo.values
-    categorias = grupo.index.tolist()
     total = sum(valores)
 
     cores_paleta = ['#4A90E2', '#F5A623', '#D0021B', '#50E3C2', '#B8E986', '#9013FE', '#FF3366']
     cores = cores_paleta * ((len(valores) // len(cores_paleta)) + 1)
-
-    st.markdown(f"""
-        <div style='text-align: center; margin-bottom: 20px;'>
-            <h4 style="margin-bottom: 0; font-weight: normal">Todas as carteiras</h4>
-            <h2 style="margin-top: 0;">R$ {total:,.2f}</h2>
-        </div>
-    """, unsafe_allow_html=True)
 
     fig, ax = plt.subplots(figsize=(6, 6))
     wedges, _ = ax.pie(
@@ -42,24 +34,8 @@ def exibir_grafico(df, filtro):
         wedgeprops=dict(width=0.4, edgecolor='white')
     )
 
-    limite_percentual = 5
-    for i, w in enumerate(wedges):
-        percentual_valor = (valores[i] / total) * 100
-        if percentual_valor >= limite_percentual:
-            angulo = (w.theta2 + w.theta1) / 2
-            rad = np.deg2rad(angulo)
-            r = 1 - 0.4 / 2
-            x = r * np.cos(rad)
-            y = r * np.sin(rad)
-
-            valor_formatado = f"R$ {valores[i]:,.0f}".replace(",", ".")
-            percentual = f"({round(percentual_valor)}%)"
-            texto = f"{valor_formatado}\n{percentual}"
-
-            ax.text(x, y, texto, ha='center', va='center', fontsize=9, fontweight='normal', color='black')
-
     total_formatado = f"R$ {total:,.0f}".replace(",", ".")
-    ax.text(0, 0, f"100%\nTodos os produtos\n{total_formatado}", ha='center', va='center', fontsize=12, fontweight='bold', color='black')
+    ax.text(0, 0, total_formatado, ha='center', va='center', fontsize=14, fontweight='bold', color='black')
 
     ax.axis('equal')
     plt.box(False)
@@ -67,6 +43,7 @@ def exibir_grafico(df, filtro):
 
     # Legenda responsiva ordenada do maior para o menor
     st.markdown("---")
+    categorias = grupo.index.tolist()
     legenda = sorted(zip(categorias, valores, cores), key=lambda x: x[1], reverse=True)
 
     max_por_linha = 4
@@ -113,6 +90,16 @@ else:
     df = pd.DataFrame()
 
 if not df.empty:
+    total_geral = df['Valor'].sum()
+
+    # Novo título centralizado acima das abas
+    st.markdown(f"""
+        <div style='text-align: center; margin-top: -20px; margin-bottom: 20px;'>
+            <h4 style="font-weight: normal">Total da carteira</h4>
+            <h2 style="margin-top: 0;">R$ {total_geral:,.2f}</h2>
+        </div>
+    """, unsafe_allow_html=True)
+
     aba = st.tabs(["Produtos", "Carteiras"])
     with aba[0]:
         exibir_grafico(df, "Tipo de Investimento")
