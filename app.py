@@ -119,10 +119,15 @@ if not df.empty:
         </div>
     """, unsafe_allow_html=True)
 
-    aba = st.tabs(["Produtos", "Carteiras"])
-    with aba[0]:
-        exibir_grafico(df, "Tipo de Investimento")
-    with aba[1]:
-        exibir_grafico(df, "Empresa")
+    with st.container():
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            with st.container(border=True):
+                st.markdown("<h5 style='text-align: center;'>Produtos</h5>", unsafe_allow_html=True)
+                exibir_grafico(df, "Tipo de Investimento")
+        with col2:
+            with st.container(border=True):
+                st.markdown("<h5 style='text-align: center;'>Carteiras</h5>", unsafe_allow_html=True)
+                exibir_grafico(df, "Empresa")
 else:
-    st.info("Por favor, envie um arquivo Excel para visualizar o gráfico.")
+    st.info("Por favor, envie um arquivo Excel para visualizar o
