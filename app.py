@@ -85,8 +85,10 @@ def exibir_grafico(df, filtro):
                 with cols[i]:
                     st.markdown("&nbsp;", unsafe_allow_html=True)
 
+# Menu hamburguer para upload
 with st.sidebar:
-    uploaded_file = st.file_uploader("📁 Upload Excel", type="xlsx", help="Excel com colunas: Empresa, Tipo de Investimento, Valor")
+    with st.expander("☰ Menu", expanded=True):
+        uploaded_file = st.file_uploader("📁 Upload Excel", type="xlsx", help="Excel com colunas: Empresa, Tipo de Investimento, Valor")
 
 if uploaded_file is not None:
     try:
