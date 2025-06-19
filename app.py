@@ -130,4 +130,4 @@ if not df.empty:
                 st.markdown("<h5 style='text-align: center;'>Carteiras</h5>", unsafe_allow_html=True)
                 exibir_grafico(df, "Empresa")
 else:
-    st.info("Por favor, envie um arquivo Excel para visualizar o
+    st.info("Por favor, envie um arquivo Excel para visualizar o gráfico.")
