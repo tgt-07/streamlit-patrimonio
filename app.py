@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import io
 import os
-import locale
 
 st.set_page_config(layout="centered", page_title="Seu Patrimônio")
 
-# Configurar locale para português brasileiro
-locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+# Função para formatar valores em reais no padrão brasileiro
+def formatar_reais(valor):
+    return f"R$ {valor:,.2f}".replace(",", "v").replace(".", ",").replace("v", ".")
 
 # Nome do arquivo local para persistência
 dados_path = "dados_investimentos.xlsx"
@@ -48,13 +48,13 @@ def exibir_grafico(df, filtro):
             x = r * np.cos(rad)
             y = r * np.sin(rad)
 
-            valor_formatado = locale.currency(valores[i], grouping=True, symbol=True).replace("\xa0", " ")
+            valor_formatado = formatar_reais(valores[i])
             percentual = f"({round(percentual_valor)}%)"
             texto = f"{valor_formatado}\n{percentual}"
 
             ax.text(x, y, texto, ha='center', va='center', fontsize=9, fontweight='normal', color='black')
 
-    total_formatado = locale.currency(total, grouping=True, symbol=True).replace("\xa0", " ")
+    total_formatado = formatar_reais(total)
     ax.text(0, 0, total_formatado, ha='center', va='center', fontsize=14, fontweight='bold', color='black')
 
     ax.axis('equal')
@@ -111,7 +111,7 @@ else:
 
 if not df.empty:
     total_geral = df['Valor'].sum()
-    total_formatado_superior = locale.currency(total_geral, grouping=True, symbol=True).replace("\xa0", " ")
+    total_formatado_superior = formatar_reais(total_geral)
 
     # Novo título centralizado acima das abas
     st.markdown(f"""
