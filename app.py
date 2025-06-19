@@ -34,6 +34,22 @@ def exibir_grafico(df, filtro):
         wedgeprops=dict(width=0.4, edgecolor='white')
     )
 
+    limite_percentual = 5
+    for i, w in enumerate(wedges):
+        percentual_valor = (valores[i] / total) * 100
+        if percentual_valor >= limite_percentual:
+            angulo = (w.theta2 + w.theta1) / 2
+            rad = np.deg2rad(angulo)
+            r = 1 - 0.4 / 2
+            x = r * np.cos(rad)
+            y = r * np.sin(rad)
+
+            valor_formatado = f"R$ {valores[i]:,.0f}".replace(",", ".")
+            percentual = f"({round(percentual_valor)}%)"
+            texto = f"{valor_formatado}\n{percentual}"
+
+            ax.text(x, y, texto, ha='center', va='center', fontsize=9, fontweight='normal', color='black')
+
     total_formatado = f"R$ {total:,.0f}".replace(",", ".")
     ax.text(0, 0, total_formatado, ha='center', va='center', fontsize=14, fontweight='bold', color='black')
 
