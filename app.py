@@ -41,7 +41,7 @@ def exibir_grafico(df, filtro):
     total_formatado = formatar_reais(total)
     ax.text(0, 0, total_formatado, ha='center', va='center', fontsize=14, fontweight='bold', color='black')
 
-    # Adiciona rótulos centralizados dentro das fatias
+    # Rótulos adaptados dinamicamente ao tamanho da fatia
     for i, p in enumerate(wedges):
         angulo = (p.theta2 + p.theta1) / 2
         rad = np.deg2rad(angulo)
@@ -52,7 +52,16 @@ def exibir_grafico(df, filtro):
         if percentual_valor >= 5:
             valor_formatado = formatar_reais(valores[i])
             percentual = f"({round(percentual_valor)}%)"
-            ax.text(x, y, f"{valor_formatado}\n{percentual}", ha='center', va='center', fontsize=9, color='black')
+
+            # Tamanho da fonte proporcional ao percentual
+            if percentual_valor < 8:
+                font_size = 7
+            elif percentual_valor < 15:
+                font_size = 8
+            else:
+                font_size = 9
+
+            ax.text(x, y, f"{valor_formatado}\n{percentual}", ha='center', va='center', fontsize=font_size, color='black')
 
     ax.axis('equal')
     plt.box(False)
