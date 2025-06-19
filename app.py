@@ -66,33 +66,11 @@ def exibir_grafico(df, filtro):
     plt.box(False)
     st.pyplot(fig)
 
-    # Legenda
-    st.markdown("---")
+    # Cartões verticais abaixo do gráfico
+    st.markdown("<br>", unsafe_allow_html=True)
     categorias = grupo.index.tolist()
     legenda = sorted(zip(categorias, valores, cores), key=lambda x: x[1], reverse=True)
 
-    max_por_linha = 4
-    total_itens = len(legenda)
-    linhas = (total_itens + max_por_linha - 1) // max_por_linha
-
-    for linha_index in range(linhas):
-        inicio = linha_index * max_por_linha
-        fim = min(inicio + max_por_linha, total_itens)
-        linha = legenda[inicio:fim]
-        cols = st.columns(max_por_linha)
-        for i in range(max_por_linha):
-            if i < len(linha):
-                categoria, _, cor = linha[i]
-                with cols[i]:
-                    st.markdown(f"<div style='display:flex;align-items:center;margin-bottom:4px;'>"
-                                f"<div style='width:14px;height:14px;background:{cor};border-radius:3px;border:1px solid #ccc;margin-right:6px'></div>"
-                                f"<span style='font-size:13px;font-family:sans-serif'>{categoria}</span></div>", unsafe_allow_html=True)
-            else:
-                with cols[i]:
-                    st.markdown("&nbsp;", unsafe_allow_html=True)
-
-    # Cartões verticais abaixo da legenda
-    st.markdown("<br>", unsafe_allow_html=True)
     for categoria, valor, cor in legenda:
         percentual = (valor / total) * 100
         percentual_formatado = f"{percentual:.2f}%"
