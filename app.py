@@ -30,7 +30,7 @@ def exibir_grafico(df, filtro):
     cores = cores_paleta * ((len(valores) // len(cores_paleta)) + 1)
 
     fig, ax = plt.subplots(figsize=(6, 6))
-    wedges, _ = ax.pie(
+    wedges, texts = ax.pie(
         valores,
         colors=cores[:len(valores)],
         startangle=90,
@@ -38,24 +38,21 @@ def exibir_grafico(df, filtro):
         wedgeprops=dict(width=0.4, edgecolor='white')
     )
 
-    limite_percentual = 5
-    for i, w in enumerate(wedges):
-        percentual_valor = (valores[i] / total) * 100
-        if percentual_valor >= limite_percentual:
-            angulo = (w.theta2 + w.theta1) / 2
-            rad = np.deg2rad(angulo)
-            r = 1 - 0.4 / 2
-            x = r * np.cos(rad)
-            y = r * np.sin(rad)
-
-            valor_formatado = formatar_reais(valores[i])
-            percentual = f"({round(percentual_valor)}%)"
-            texto = f"{valor_formatado}\n{percentual}"
-
-            ax.text(x, y, texto, ha='center', va='center', fontsize=9, fontweight='normal', color='black')
-
     total_formatado = formatar_reais(total)
     ax.text(0, 0, total_formatado, ha='center', va='center', fontsize=14, fontweight='bold', color='black')
+
+    # Adiciona rótulos centralizados dentro das fatias
+    for i, p in enumerate(wedges):
+        angulo = (p.theta2 + p.theta1) / 2
+        rad = np.deg2rad(angulo)
+        r = 1 - 0.4 / 2
+        x = r * np.cos(rad)
+        y = r * np.sin(rad)
+        percentual_valor = (valores[i] / total) * 100
+        if percentual_valor >= 5:
+            valor_formatado = formatar_reais(valores[i])
+            percentual = f"({round(percentual_valor)}%)"
+            ax.text(x, y, f"{valor_formatado}\n{percentual}", ha='center', va='center', fontsize=9, color='black')
 
     ax.axis('equal')
     plt.box(False)
