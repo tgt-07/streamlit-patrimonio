@@ -7,9 +7,13 @@ import os
 
 st.set_page_config(layout="centered", page_title="Seu Patrimônio")
 
-# Função para formatar valores em reais no padrão brasileiro
+# Função para formatar valores em reais no padrão brasileiro (com casas decimais)
 def formatar_reais(valor):
     return f"R$ {valor:,.2f}".replace(",", "v").replace(".", ",").replace("v", ".")
+
+# Função para formatar valores sem casas decimais (para rótulos do gráfico)
+def formatar_reais_sem_centavos(valor):
+    return f"R$ {int(round(valor)):,}".replace(",", ".")
 
 # Nome do arquivo local para persistência
 dados_path = "dados_investimentos.xlsx"
@@ -41,7 +45,6 @@ def exibir_grafico(df, filtro):
     total_formatado = formatar_reais(total)
     ax.text(0, 0, total_formatado, ha='center', va='center', fontsize=14, fontweight='bold', color='black')
 
-    # Rótulos simples como na primeira versão do dia
     for i, p in enumerate(wedges):
         angulo = (p.theta2 + p.theta1) / 2
         rad = np.deg2rad(angulo)
@@ -50,7 +53,7 @@ def exibir_grafico(df, filtro):
         y = r * np.sin(rad)
         percentual_valor = (valores[i] / total) * 100
         if percentual_valor >= 5:
-            valor_formatado = formatar_reais(valores[i])
+            valor_formatado = formatar_reais_sem_centavos(valores[i])
             percentual = f"({round(percentual_valor)}%)"
             ax.text(x, y, f"{valor_formatado}\n{percentual}", ha='center', va='center', fontsize=8, color='black')
 
@@ -58,7 +61,6 @@ def exibir_grafico(df, filtro):
     plt.box(False)
     st.pyplot(fig)
 
-    # Legenda responsiva ordenada do maior para o menor
     st.markdown("---")
     categorias = grupo.index.tolist()
     legenda = sorted(zip(categorias, valores, cores), key=lambda x: x[1], reverse=True)
@@ -83,11 +85,9 @@ def exibir_grafico(df, filtro):
                 with cols[i]:
                     st.markdown("&nbsp;", unsafe_allow_html=True)
 
-# Upload e aba
 with st.sidebar:
     uploaded_file = st.file_uploader("📁 Upload Excel", type="xlsx", help="Excel com colunas: Empresa, Tipo de Investimento, Valor")
 
-# Lógica de leitura
 if uploaded_file is not None:
     try:
         df = pd.read_excel(uploaded_file)
@@ -110,7 +110,6 @@ if not df.empty:
     total_geral = df['Valor'].sum()
     total_formatado_superior = formatar_reais(total_geral)
 
-    # Novo título centralizado acima das abas
     st.markdown(f"""
         <div style='text-align: center; margin-top: -20px; margin-bottom: 20px;'>
             <h4 style="font-weight: normal">Total da carteira</h4>
