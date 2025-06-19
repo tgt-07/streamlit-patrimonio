@@ -7,17 +7,6 @@ import os
 
 st.set_page_config(layout="centered", page_title="Seu Patrimônio")
 
-st.markdown("""
-    <div style='text-align: center;'>
-        <h2 style="margin-bottom: 0">Seu patrimônio é:</h2>
-    </div>
-""", unsafe_allow_html=True)
-
-# Upload de Excel
-with st.sidebar:
-    uploaded_file = st.file_uploader("📁 Upload Excel", type="xlsx", help="Excel com colunas: Empresa, Tipo de Investimento, Valor")
-    filtro = st.selectbox("Visualizar por:", ["Tipo de Investimento", "Empresa"], index=0)
-
 # Nome do arquivo local para persistência
 dados_path = "dados_investimentos.xlsx"
 
@@ -36,6 +25,13 @@ def exibir_grafico(df, filtro):
 
     cores_paleta = ['#4A90E2', '#F5A623', '#D0021B', '#50E3C2', '#B8E986', '#9013FE', '#FF3366']
     cores = cores_paleta * ((len(valores) // len(cores_paleta)) + 1)
+
+    st.markdown(f"""
+        <div style='text-align: center; margin-bottom: 20px;'>
+            <h4 style="margin-bottom: 0; font-weight: normal">Todas as carteiras</h4>
+            <h2 style="margin-top: 0;">R$ {total:,.2f}</h2>
+        </div>
+    """, unsafe_allow_html=True)
 
     fig, ax = plt.subplots(figsize=(6, 6))
     wedges, _ = ax.pie(
@@ -63,7 +59,7 @@ def exibir_grafico(df, filtro):
             ax.text(x, y, texto, ha='center', va='center', fontsize=9, fontweight='normal', color='black')
 
     total_formatado = f"R$ {total:,.0f}".replace(",", ".")
-    ax.text(0, 0, total_formatado, ha='center', va='center', fontsize=16, fontweight='bold', color='black')
+    ax.text(0, 0, f"100%\nTodos os produtos\n{total_formatado}", ha='center', va='center', fontsize=12, fontweight='bold', color='black')
 
     ax.axis('equal')
     plt.box(False)
@@ -93,6 +89,10 @@ def exibir_grafico(df, filtro):
                 with cols[i]:
                     st.markdown("&nbsp;", unsafe_allow_html=True)
 
+# Upload e aba
+with st.sidebar:
+    uploaded_file = st.file_uploader("📁 Upload Excel", type="xlsx", help="Excel com colunas: Empresa, Tipo de Investimento, Valor")
+
 # Lógica de leitura
 if uploaded_file is not None:
     try:
@@ -100,14 +100,23 @@ if uploaded_file is not None:
         if all(col in df.columns for col in ['Empresa', 'Tipo de Investimento', 'Valor']):
             df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce').fillna(0)
             df.to_excel(dados_path, index=False)
-            exibir_grafico(df, filtro)
         else:
             st.error("Colunas obrigatórias não encontradas no Excel.")
+            df = pd.DataFrame()
     except Exception as e:
         st.error(f"Erro ao ler o arquivo: {e}")
+        df = pd.DataFrame()
 elif os.path.exists(dados_path):
     df = pd.read_excel(dados_path)
     df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce').fillna(0)
-    exibir_grafico(df, filtro)
+else:
+    df = pd.DataFrame()
+
+if not df.empty:
+    aba = st.tabs(["Produtos", "Carteiras"])
+    with aba[0]:
+        exibir_grafico(df, "Tipo de Investimento")
+    with aba[1]:
+        exibir_grafico(df, "Empresa")
 else:
     st.info("Por favor, envie um arquivo Excel para visualizar o gráfico.")
