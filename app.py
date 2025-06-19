@@ -108,11 +108,9 @@ def exibir_grafico(df, filtro):
                     {categoria}
                 </div>
             </div>
-            <div style='margin-top: 12px; font-size: 13px; color: #666;'>
-                Saldo total
-            </div>
-            <div style='font-size: 15px; font-weight: bold; color: #222;'>
-                {valor_formatado}
+            <div style='margin-top: 12px; display: flex; justify-content: space-between; align-items: center;'>
+                <div style='font-size: 13px; color: #666;'>Saldo total</div>
+                <div style='font-size: 15px; font-weight: bold; color: #222;'>{valor_formatado}</div>
             </div>
         </div>
         """, unsafe_allow_html=True)
