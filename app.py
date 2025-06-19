@@ -18,8 +18,10 @@ def formatar_reais_sem_centavos(valor):
 # Nome do arquivo local para persistência
 dados_path = "dados_investimentos.xlsx"
 
-# Upload direto sem menu hamburguer
-uploaded_file = st.file_uploader("📁 Upload Excel", type="xlsx", help="Excel com colunas: Empresa, Tipo de Investimento, Valor")
+# Menu hamburguer com botão de upload
+with st.sidebar:
+    with st.expander("☰ Menu", expanded=True):
+        uploaded_file = st.file_uploader("📁 Upload Excel", type="xlsx", help="Excel com colunas: Empresa, Tipo de Investimento, Valor")
 
 # Função para exibir o gráfico de rosca
 def exibir_grafico(df, filtro):
